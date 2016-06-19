@@ -27,7 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^1.1.3",
-    "cmdu": "^1.0.0",
+    "cmdu": "^1.0.1",
     "inquirer": "^1.0.3"
   }
 }
