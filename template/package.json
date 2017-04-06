@@ -2,6 +2,11 @@
     "name": "{name}",
     "description": "The first cli",
     "version": "1.0.0",
+    "author": "",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/"
+    },
     "keywords": [
         "command",
         "cli"
@@ -14,10 +19,8 @@
         "{cmd}": "./bin/{index}.js"
     },
     "dependencies": {},
-    "devDependencies": {
-    },
-    "scripts": {
-    },
+    "devDependencies": {},
+    "scripts": {},
     "engine-strict": true,
     "engines": {
         "node": ">= 4.0"
