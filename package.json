@@ -1,6 +1,6 @@
 {
   "name": "cmdu-cli",
-  "version": "1.0.4",
+  "version": "1.0.12",
   "description": "CLI tool for using cmdu to create a new command line app.",
   "bin": {
     "cmdu": "./bin/index.js"

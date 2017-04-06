@@ -13,6 +13,23 @@ app.version = require('../package.json').version;
 var asks = local.questions;
 var tips = local.tooltips;
 
+// npm publish bug#5082 makes that read from template/index.js is impossible.
+var main = [
+    "#!/usr/bin/env node",
+    "",
+    "'use strict';",
+    "",
+    "var app = require('cmdu');",
+    "",
+    "app.version = require('../package.json').version;",
+    "",
+    "app.action(function () {",
+    "    console.log('hello world!');",
+    "});",
+    "",
+    "app.listen();"
+].join('\n');
+
 app
     .describe(tips.description)
     .option('-h, --help', tips.desc_help)
@@ -38,8 +55,7 @@ app
                     fs.writeFileSync(path.resolve(target, 'package.json'), JSON.stringify(packet, null, 2));
                     console.log(tips.create, 'package.json');
 
-                    var buf = fs.readFileSync(path.resolve(__dirname, '../template/index.js'));
-                    fs.writeFileSync(path.resolve(binary, answers.index + '.js'), buf);
+                    fs.writeFileSync(path.resolve(binary, answers.index + '.js'), main);
                     console.log(tips.create, 'bin/' + answers.index + '.js');
                     console.log('');
                 } catch (e) {
