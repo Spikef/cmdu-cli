@@ -35,7 +35,7 @@ app
     .option('-h, --help', tips.desc_help)
     .option('-v, --version', tips.desc_version)
     .action(function () {
-        console.log('\n' + chalk.cyan(tips.start_tip) + '\n');
+        console.log('\n' + chalk.cyan(tips.start_tip) + '\n>> ' + chalk.blue(process.cwd()) + '\n');
 
         io.prompt(asks)
             .then(function (answers) {
@@ -65,7 +65,7 @@ app
                     error = e.message;
                 }
 
-                return new Promise((resolve, reject) => {
+                return new Promise(function(resolve, reject) {
                     if (error) {
                         reject();
                     }else{
@@ -100,7 +100,7 @@ app
 
                 console.log('');
                 console.log(tips.complete, args.name);
-            })
+            });
     });
 
 app.listen();
