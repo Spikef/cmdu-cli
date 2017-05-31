@@ -8,7 +8,9 @@ var chalk = require('chalk');
 var app = require('cmdu');
 var child = require('child_process');
 
-app.version = require('../package.json').version;
+app
+    .language(local.location)
+    .version = require('../package.json').version;
 
 var asks = local.questions;
 var tips = local.tooltips;
@@ -32,8 +34,6 @@ var main = [
 
 app
     .describe(tips.description)
-    .option('-h, --help', tips.desc_help)
-    .option('-v, --version', tips.desc_version)
     .action(function () {
         console.log('\n' + chalk.cyan(tips.start_tip) + '\n>> ' + chalk.blue(process.cwd()) + '\n');
 
