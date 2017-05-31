@@ -1,4 +1,4 @@
-{
+module.exports = {
     "name": "{name}",
     "description": "The first cli",
     "version": "1.0.0",
@@ -26,4 +26,4 @@
         "node": ">= 4.0"
     },
     "license": "MIT"
-}
+};

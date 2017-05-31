@@ -15,26 +15,9 @@ app
 var asks = local.questions;
 var tips = local.tooltips;
 
-// npm publish bug#5082 makes that read from template/index.js is impossible.
-var main = [
-    "#!/usr/bin/env node",
-    "",
-    "'use strict';",
-    "",
-    "var app = require('cmdu');",
-    "",
-    "app.version = require('../package.json').version;",
-    "",
-    "app.action(function () {",
-    "    console.log('hello world!');",
-    "});",
-    "",
-    "app.listen();"
-].join('\n');
-
 app
     .describe(tips.description)
-    .action(function () {
+    .action(function() {
         console.log('\n' + chalk.cyan(tips.start_tip) + '\n>> ' + chalk.blue(process.cwd()) + '\n');
 
         io.prompt(asks)
@@ -48,14 +31,15 @@ app
                     fs.mkdirSync(target);
                     fs.mkdirSync(binary);
 
-                    var packet = require('../template/package.json');
+                    var packet = require('../template/package.js');
                     packet.name = answers.name;
                     packet.bin = {};
                     packet.bin[answers.cmd] = './bin/' + answers.index + '.js';
                     fs.writeFileSync(path.resolve(target, 'package.json'), JSON.stringify(packet, null, 2));
                     console.log(tips.create, 'package.json');
 
-                    fs.writeFileSync(path.resolve(binary, answers.index + '.js'), main);
+                    var index = fs.readFileSync(path.resolve(__dirname, '../template/index.js'), 'utf8');
+                    fs.writeFileSync(path.resolve(binary, answers.index + '.js'), index);
                     console.log(tips.create, 'bin/' + answers.index + '.js');
                     console.log('');
                 } catch (e) {
@@ -101,6 +85,29 @@ app
                 console.log('');
                 console.log(tips.complete, args.name);
             });
+    });
+
+
+app
+    .command('unlink', { noHelp: true })
+    .action(function() {
+        var cwd = process.cwd();
+        var pkg = path.resolve(cwd, 'package.json');
+
+        if (!fs.existsSync(pkg)) return;
+
+        pkg = require(pkg);
+        if (!pkg.name || !pkg.bin) return;
+
+        var bin = Object.keys(pkg.bin)[0];
+        var name = pkg.name;
+
+        try {
+            fs.unlinkSync('/usr/local/bin/' + bin);
+            fs.unlinkSync('/usr/local/lib/node_modules/' + name);
+        } catch(e) {
+            console.error(e);
+        }
     });
 
 app.listen();
