@@ -7,6 +7,7 @@ var io = require('inquirer');
 var chalk = require('chalk');
 var app = require('cmdu');
 var child = require('child_process');
+var spawn = child.spawnSync;
 
 app
     .language(local.location)
@@ -31,14 +32,14 @@ app
                     fs.mkdirSync(target);
                     fs.mkdirSync(binary);
 
-                    var packet = require('../template/package.js');
+                    var packet = require('../template/' + answers.version + '/package.js');
                     packet.name = answers.name;
                     packet.bin = {};
                     packet.bin[answers.cmd] = './bin/' + answers.index + '.js';
                     fs.writeFileSync(path.resolve(target, 'package.json'), JSON.stringify(packet, null, 2));
                     console.log(tips.create, 'package.json');
 
-                    var index = fs.readFileSync(path.resolve(__dirname, '../template/index.js'), 'utf8');
+                    var index = fs.readFileSync(path.resolve(__dirname, '../template', answers.version, 'index.js'), 'utf8');
                     fs.writeFileSync(path.resolve(binary, answers.index + '.js'), index);
                     console.log(tips.create, 'bin/' + answers.index + '.js');
                     console.log('');
@@ -55,7 +56,8 @@ app
                     }else{
                         var args = {
                             target: target,
-                            name: answers.cmd
+                            name: answers.cmd,
+                            version: answers.version.substring(1)
                         };
 
                         resolve(args);
@@ -64,11 +66,10 @@ app
             })
             .then(function (args) {
                 var target = args.target;
-                var spawn = child.spawnSync;
                 var result;
 
                 console.log(tips.dependencies);
-                result = spawn('npm', ['install', 'cmdu', '--save'], { cwd: target, stdio: 'inherit'});
+                result = spawn('npm', ['install', 'cmdu@' + args.version, '--save'], { cwd: target, stdio: 'inherit'});
                 if (result.status != 0) {
                     console.log('');
                     console.log(tips.depend_fail);
@@ -89,7 +90,7 @@ app
 
 
 app
-    .command('unlink', { noHelp: true })
+    .command('unlink', tips.unlink)
     .action(function() {
         var cwd = process.cwd();
         var pkg = path.resolve(cwd, 'package.json');
@@ -99,15 +100,9 @@ app
         pkg = require(pkg);
         if (!pkg.name || !pkg.bin) return;
 
-        var bin = Object.keys(pkg.bin)[0];
         var name = pkg.name;
 
-        try {
-            fs.unlinkSync('/usr/local/bin/' + bin);
-            fs.unlinkSync('/usr/local/lib/node_modules/' + name);
-        } catch(e) {
-            console.error(e);
-        }
+        spawn('npm', ['uninstall', '-g', name], { stdio: 'inherit' });
     });
 
 app.listen();
